@@ -1,0 +1,166 @@
+Sub EliminarFilasDuplicadas()
+    Dim ultimaFila As Long
+    Dim i As Long
+    Dim valorActual As Variant
+    
+    ' Obtener la última fila con datos en la columna A
+    ultimaFila = Cells(Rows.Count, 1).End(xlUp).Row
+    
+    ' Iniciar el bucle desde la segunda fila hasta la última
+    For i = ultimaFila To 2 Step -1
+        ' Obtener el valor en la columna A de la fila actual
+        valorActual = Cells(i, 1).Value
+        
+        ' Verificar si el valor ya ha aparecido antes
+        If WorksheetFunction.CountIf(Range("A1:A" & i), valorActual) > 1 Then
+            ' Si es así, eliminar la fila actual
+            Rows(i).Delete
+        End If
+    Next i
+End Sub
+
+Sub CrearNuevoArchivo()
+    ' Referencia a la hoja "tabla_11" en el archivo actual
+    Dim wsTabla11 As Worksheet
+    Set wsTabla11 = ThisWorkbook.Sheets("tabla_11")
+    
+    ' Crear un nuevo libro de trabajo
+    Dim nuevoLibro As Workbook
+    Set nuevoLibro = Workbooks.Add
+    
+    ' Referencia a la hoja de trabajo en el nuevo libro
+    Dim nuevaHoja As Worksheet
+    Set nuevaHoja = nuevoLibro.Worksheets(1)
+    
+    ' Encabezados de las columnas en el nuevo archivo
+    nuevaHoja.Range("A1").Value = "LOAN_ACCOUNT_NO"
+    nuevaHoja.Range("B1").Value = "BRANCH_CODE"
+    nuevaHoja.Range("C1").Value = "NAME_CAP_COMP"
+    nuevaHoja.Range("D1").Value = "CAP_COMP_VALUE"
+    nuevaHoja.Range("E1").Value = "BASE_RATE"
+    nuevaHoja.Range("F1").Value = "CLIENT_RATE"
+    nuevaHoja.Range("G1").Value = "SUBVENCION"
+    nuevaHoja.Range("H1").Value = "NUMBER_OF_SCHEDULES"
+    nuevaHoja.Range("I1").Value = "CAP_COMP_SCHEDULE_AMOUNT"
+    nuevaHoja.Range("J1").Value = "PARTICIPATION"
+    
+    ' Variables para controlar el índice en la nueva hoja
+    Dim indiceNuevo As Long
+    indiceNuevo = 2
+    
+    ' Obtener la última fila con datos en la hoja "tabla_11"
+    Dim ultimaFilaTabla11 As Long
+    ultimaFilaTabla11 = wsTabla11.Cells(Rows.Count, 1).End(xlUp).Row
+    
+    ' Referencia al archivo "20231025 Simulador contratosTIR.xlsm"
+    Dim rutaContratos As String
+    rutaContratos = ThisWorkbook.Path & "\20231025 Simulador contratosTIR.xlsm"
+    
+    ' Verificar si el archivo "20231025 Simulador contratosTIR.xlsm" está abierto
+    Dim wbContratos As Workbook
+    On Error Resume Next
+    Set wbContratos = Workbooks("20231025 Simulador contratosTIR.xlsm")
+    On Error GoTo 0
+    
+    ' Si el archivo no está abierto, abrirlo
+    If wbContratos Is Nothing Then
+        Set wbContratos = Workbooks.Open(rutaContratos)
+    End If
+    
+    ' Verificar si la hoja "contratos" está activa
+    If wbContratos.Sheets("contratos").Activate Then
+        For i = 2 To ultimaFilaTabla11
+                ' Obtener el valor de la columna A en "tabla_11"
+                Dim valorTabla11 As Variant
+                valorTabla11 = wsTabla11.Cells(i, 1).Value
+                
+                ' Buscar el valor en la columna A de la hoja "contratos"
+                Dim filaContratos As Long
+                filaContratos = Application.Match(valorTabla11, wbContratos.Sheets("contratos").Columns(1), 0)
+                
+                ' Verificar si se encontrï¿½ el valor en "contratos"
+                If Not IsError(filaContratos) Then
+                    ' Columna "LOAN_ACCOUNT_NO BRANCH_CODE"
+                    nuevaHoja.Range("A" & indiceNuevo & ":A" & indiceNuevo + 3).Value = wsTabla11.Cells(i, 1).Value
+                    nuevaHoja.Range("B" & indiceNuevo & ":B" & indiceNuevo + 3).Value = wsTabla11.Cells(i, 2).Value
+                    
+                    ' Columna "NAME_CAP_COMP"
+                    nuevaHoja.Range("C" & indiceNuevo).Value = "Valor a Financiar VHC"
+                    nuevaHoja.Range("C" & indiceNuevo + 1).Value = "Accesorios"
+                    nuevaHoja.Range("C" & indiceNuevo + 2).Value = "Mantenimiento"
+                    nuevaHoja.Range("C" & indiceNuevo + 3).Value = "Garantia"
+                    
+                    ' Columna "CAP_COMP_VALUE"
+                    nuevaHoja.Range("D" & indiceNuevo).Value = wsTabla11.Cells(i, 4).Value
+                    nuevaHoja.Range("D" & indiceNuevo + 1).Value = wsTabla11.Cells(i, 5).Value
+                    nuevaHoja.Range("D" & indiceNuevo + 2).Value = wsTabla11.Cells(i, 6).Value
+                    nuevaHoja.Range("D" & indiceNuevo + 3).Value = wsTabla11.Cells(i, 7).Value
+                    
+                    ' Columna "BASE_RATE"
+                    nuevaHoja.Range("E" & indiceNuevo & ":E" & indiceNuevo + 3).Value = ObtenerValorColumna("Tasa Base", wbContratos.Sheets("contratos"), filaContratos, 7)
+                    ' Ajustar el formato de las celdas a porcentaje con cinco decimales
+                    nuevaHoja.Range("E" & indiceNuevo & ":E" & indiceNuevo + 3).NumberFormat = "0.00000%"
+                    
+                    ' Columna "CLIENT_RATE"
+                    nuevaHoja.Range("F" & indiceNuevo & ":F" & indiceNuevo + 3).Value = ObtenerValorColumna("Tasa cliente", wbContratos.Sheets("contratos"), filaContratos, 8)
+                    ' Ajustar el formato de las celdas a porcentaje con cinco decimales
+                    nuevaHoja.Range("F" & indiceNuevo & ":F" & indiceNuevo + 3).NumberFormat = "0.00000%"
+                    
+                    ' Columna "SUBVENCION"
+                    nuevaHoja.Range("G" & indiceNuevo & ":G" & indiceNuevo + 3).Value = wbContratos.Sheets("contratos").Cells(filaContratos, 10).Value
+                    
+                    ' Columna "NUMBER_OF_SCHEDULES"
+                    nuevaHoja.Range("H" & indiceNuevo & ":H" & indiceNuevo + 3).Value = wsTabla11.Cells(i, 3).Value
+                    
+                    ' Columna "PARTICIPATION"
+                    nuevaHoja.Cells(indiceNuevo, 10).Value = wsTabla11.Cells(i, 9).Value
+                    nuevaHoja.Cells(indiceNuevo + 1, 10).Value = wsTabla11.Cells(i, 10).Value
+                    nuevaHoja.Cells(indiceNuevo + 2, 10).Value = wsTabla11.Cells(i, 11).Value
+                    nuevaHoja.Cells(indiceNuevo + 3, 10).Value = wsTabla11.Cells(i, 12).Value
+                    
+                    ' Ajustar el ï¿½ndice para la prï¿½xima iteraciï¿½n
+                    indiceNuevo = indiceNuevo + 4
+                End If
+            Next i
+    Else
+        MsgBox "La hoja 'contratos' no está activa en el archivo '20231025 Simulador contratosTIR.xlsm'."
+    End If
+    
+    ' Pedir al usuario la ubicación y el nombre del archivo
+    Dim rutaArchivo As Variant
+    rutaArchivo = Application.GetSaveAsFilename(FileFilter:="Archivos Excel (*.xlsx), *.xlsx", Title:="Guardar como")
+    
+    ' Verificar si el usuario hizo una selección
+    If rutaArchivo <> False Then
+        ' Guardar el nuevo libro con la ruta y nombre proporcionados por el usuario
+        nuevoLibro.SaveAs rutaArchivo
+    End If
+    
+    ' Cerrar el nuevo libro
+    nuevoLibro.Close
+End Sub
+Function ObtenerValorColumna(nombreColumna As String, hoja As Worksheet, fila As Long, columna As Long) As Variant
+    ' Buscar el nombre de la columna en la primera fila de la hoja
+    Dim columnaBuscada As Range
+    On Error Resume Next
+    Set columnaBuscada = hoja.Rows(1).Find(nombreColumna, LookIn:=xlValues, lookat:=xlWhole)
+    On Error GoTo 0
+    
+    ' Verificar si se encontró la columna
+    If Not columnaBuscada Is Nothing Then
+        ' Obtener el valor de la celda en la misma columna pero en la fila especificada
+        ObtenerValorColumna = hoja.Cells(fila, columnaBuscada.Column).Value
+    Else
+        ObtenerValorColumna = "Columna no encontrada"
+    End If
+End Function
+
+
+' Función para verificar si un libro está abierto
+Function IsWorkbookOpen(wbName As String) As Boolean
+    Dim wb As Workbook
+    On Error Resume Next
+    Set wb = Workbooks(wbName)
+    On Error GoTo 0
+    IsWorkbookOpen = Not wb Is Nothing
+End Function

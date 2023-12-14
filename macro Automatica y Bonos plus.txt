@@ -1,0 +1,175 @@
+mira, tengo 2 documentos excel en la misma ruta, uno se llama "tabla_3" este documento tiene una hoja llamada  "tabla_3" con las siguientes columnas
+
+
+ACCOUNT_NUMBER	
+
+BRANCH_CODE	
+
+REC_ID	
+
+PROCESS_DATE	
+
+COM_AUTO_CONS	
+
+COM_AUTO_VEND	
+
+COM_AUTO_TERC	
+
+COM_BONPLUS_CONS
+
+COM_BONPLUS_VEND
+
+COM_BONPLUS_TERC
+
+COM_GARNT_EXT_CONS	
+
+COM_GARNT_EXT_VEND	
+
+COM_GARNT_EXT_TERC	
+
+COM_CONT_MNTMN_CONS	
+
+COM_CONT_MNTMN_VEND	
+
+COM_CONT_MNTMN_TERC	
+
+COM_CRDLIKE_CONS	
+
+COM_CRDLIKE_VEND	
+
+COM_CRDLIKE_TERC	
+
+COM_AUTO_RECD_CONS	
+
+COM_AUTO_RECD_VEND	
+
+COM_AUTO_RECD_TERC	
+
+COM_PREMIOS_CONS	
+
+COM_PREMIOS_VEND	
+
+COM_PREMIOS_TERC
+
+
+el segundo archivo se llama "20231025 Simulador contratosTIR", este documento tiene una hoja llamada "contratos" con las siguientes columnas
+
+
+Contrato	
+
+P_restante	
+
+Gracia restante	
+
+P_2_tramo	
+
+Cuota	
+
+Saldo a migrar	
+
+Tasa Base	
+
+Tasa cliente	
+
+Vr Residual	
+
+Subvención	
+
+Automatica	
+
+Bonos plus	
+
+simulador	
+
+TIR	
+
+Fecha desembolso
+
+
+Ahora necesito crear una macro que con un boton que esté en el archivo "tabla_3" me traiga los valores de 
+
+- de la columna "Automatica" y me los coloque en la columna "COM_AUTO_CONS"
+
+- de la columna "Bonos plus" y me los coloque en la columna "COM_BONPLUS_CONS"
+
+en la fila donde las columnas "Contrato" y "ACCOUNT_NUMBER" sean iguales.
+
+Sub TransferirDatos()
+    ' Definir variables para los libros de Excel
+    Dim LibroTabla3 As Workbook
+    Dim LibroTabla4 As Workbook
+    Dim LibroContratos As Workbook
+
+    ' Definir variables para las hojas de Excel
+    Dim HojaTabla3 As Worksheet
+    Dim HojaTabla4 As Worksheet
+    Dim HojaContratos As Worksheet
+
+    ' Abrir el libro de tabla_3
+    Set LibroTabla3 = ThisWorkbook
+
+    ' Abrir el libro de tabla_4
+    On Error Resume Next
+    Set LibroTabla4 = Workbooks.Open(ThisWorkbook.Path & "\tabla_4.xlsm")
+    On Error GoTo 0
+
+    ' Verificar si el libro de tabla_4 está abierto, si no, abrirlo
+    If LibroTabla4 Is Nothing Then
+        MsgBox "No se pudo abrir el archivo tabla_4.xlsm. Asegúrate de que el archivo está cerrado y vuelve a intentarlo."
+        Exit Sub
+    End If
+
+    ' Abrir el libro de contratos
+    On Error Resume Next
+    Set LibroContratos = Workbooks.Open(ThisWorkbook.Path & "\20231025 Simulador contratosTIR.xlsm")
+    On Error GoTo 0
+
+    ' Verificar si el libro de contratos está abierto, si no, abrirlo
+    If LibroContratos Is Nothing Then
+        MsgBox "No se pudo abrir el archivo 20231025 Simulador contratosTIR.xlsm. Asegúrate de que el archivo está cerrado y vuelve a intentarlo."
+        Exit Sub
+    End If
+
+    ' Definir las hojas de tabla_3, tabla_4 y contratos para todos los libros
+    Set HojaTabla3 = LibroTabla3.Sheets("tabla_3")
+    Set HojaTabla4 = LibroTabla4.Sheets("tabla_4")
+    Set HojaContratos = LibroContratos.Sheets("contratos")
+
+    ' Número de filas en la hoja de tabla_3
+    Dim UltimaFilaTabla3 As Long
+    UltimaFilaTabla3 = HojaTabla3.Cells(HojaTabla3.Rows.Count, "A").End(xlUp).Row
+
+    ' Iterar sobre las filas en la hoja de tabla_3
+    For i = 2 To UltimaFilaTabla3 ' Empezamos desde la segunda fila asumiendo que la primera es el encabezado
+        ' Obtener el número de contrato y valores correspondientes de la hoja de contratos
+        AccountNumber = HojaTabla3.Cells(i, 1).Value
+        Automatica = HojaContratos.Cells(Application.Match(AccountNumber, HojaContratos.Columns(1), 0), 11).Value ' Columna "Automatica" en la hoja de contratos
+        BonosPlus = HojaContratos.Cells(Application.Match(AccountNumber, HojaContratos.Columns(1), 0), 12).Value ' Columna "Bonos plus" en la hoja de contratos
+
+        ' Ingresar los valores en las columnas correspondientes en la hoja de tabla_3
+        HojaTabla3.Cells(i, 5).Value = Automatica ' Columna "COM_AUTO_CONS" en la hoja de tabla_3
+        HojaTabla3.Cells(i, 8).Value = BonosPlus ' Columna "COM_BONPLUS_CONS" en la hoja de tabla_3
+
+        ' Obtener el valor correspondiente de "Automatica" y "Bonos plus" en la hoja de tabla_4
+        Dim FilaMatchTabla4 As Variant
+        FilaMatchTabla4 = Application.Match(AccountNumber, HojaTabla4.Columns(1), 0)
+
+        If Not IsError(FilaMatchTabla4) Then
+            ' Ingresar los valores en las columnas correspondientes en la hoja de tabla_4
+            HojaTabla4.Cells(FilaMatchTabla4, 5).Value = Automatica ' Columna "COMISION_AUTOMATICA" en la hoja de tabla_4
+            HojaTabla4.Cells(FilaMatchTabla4, 6).Value = BonosPlus ' Columna "COMISION_BONOSPLUS" en la hoja de tabla_4
+        Else
+            ' Manejar el caso en el que no se encuentra una coincidencia en tabla_4
+            ' Puedes mostrar un mensaje, agregar una nueva fila, etc.
+            MsgBox "No se encontró una coincidencia para AccountNumber en tabla_4: " & AccountNumber
+        End If
+    Next i
+
+    ' Guardar cambios en los libros y cerrarlos
+    LibroTabla3.Save
+    LibroTabla4.Close SaveChanges:=True ' Guardar cambios en el libro de tabla_4
+    LibroContratos.Close SaveChanges:=False ' No guardar cambios en el libro de contratos
+End Sub
+
+
+

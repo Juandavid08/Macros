@@ -1,0 +1,415 @@
+Sub eleccionSimilarTIR()
+    Dim wsContratos As Worksheet
+    Dim wsTradic As Worksheet
+    Dim wsBalloon As Worksheet
+    Dim valorContrato As Variant
+    Dim destino As String
+    Dim otroLibro As Workbook
+    Dim rutaOtroLibro As String
+    Dim ultimaFilaContratos As Long
+    Dim ultimaFilaOtroLibro As Long
+    
+    ' Definir las hojas de trabajo
+    Set wsContratos = ThisWorkbook.Sheets("contratos")
+    Set wsTradic = ThisWorkbook.Sheets("Tradic")
+    Set wsBalloon = ThisWorkbook.Sheets("Balloon")
+    
+    ' Definir la ruta del otro archivo Excel
+    rutaOtroLibro = "C:\Users\im00719\Downloads\Loans_TIR_ETL por desarollarV1.xlsx" ' Reemplaza con la ruta correcta
+    
+    ' Abrir el otro libro
+    Set otroLibro = Workbooks.Open(rutaOtroLibro)
+    
+    ' Agregar el título "TIR" en la fila 2 de la nueva columna
+    wsContratos.Cells(2, 14).Value = "TIR"
+    
+    ' Agregar el título "TIR" en la fila 2 de la nueva columna
+    wsContratos.Cells(2, 8).Value = "Tasa cliente"
+    
+    ' Obtener la última fila con datos en la columna A de "contratos"
+    ultimaFilaContratos = wsContratos.Cells(wsContratos.Rows.Count, "A").End(xlUp).Row
+    
+    ' Bucle para recorrer la columna A en "contratos"
+    For Each cell In wsContratos.Range("A3:A" & ultimaFilaContratos)
+        ' Obtener el valor de contrato de la celda actual en la columna A
+        valorContrato = cell.Value
+        
+        ' Obtener el destino basado en la columna M en "contratos"
+        destino = UCase(wsContratos.Cells(cell.Row, 13).Value) ' Convertir a mayúsculas para hacerlo insensible a mayúsculas/minúsculas
+        
+        ' Determinar el destino y realizar las acciones correspondientes
+        Select Case destino
+            Case "TRADIC"
+                ' Copiar el valor de contrato en la celda D3 en "Tradic"
+                wsTradic.Range("D3").Value = valorContrato
+                ' Copiar el valor de la celda D4 de "simulador" al destino
+                wsTradic.Range("D4").Copy
+                ' Pegar el valor de D4 en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 14).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Copiar el valor de la celda D12 de "simulador" al destino
+                wsTradic.Range("D12").Copy
+                
+                ' Pegar el valor de D4 en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 8).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                ' Aplicar formato de porcentaje
+                wsContratos.Cells(cell.Row, 14).Style = "Percent"
+                wsContratos.Cells(cell.Row, 14).NumberFormat = "0.0000000000%"
+                wsContratos.Cells(cell.Row, 8).Style = "Percent"
+                wsContratos.Cells(cell.Row, 8).NumberFormat = "0.0000000000%"
+                
+                
+                ' ONCEAVO columna A
+                
+                
+                  ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("K20:K" & wsTradic.Cells(wsTradic.Rows.Count, "K").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "B").End(xlUp).Row
+                wsTradic.Range("K20:K" & wsTradic.Cells(wsTradic.Rows.Count, "K").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "B").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                 ' PRIMERA columna B
+                
+                ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("B20:B" & wsTradic.Cells(wsTradic.Rows.Count, "B").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "C").End(xlUp).Row
+                wsTradic.Range("B20:B" & wsTradic.Cells(wsTradic.Rows.Count, "B").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "C").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+
+
+                
+                
+                ' SEGUNDA columna I
+                
+                  ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("I20:I" & wsTradic.Cells(wsTradic.Rows.Count, "I").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "D").End(xlUp).Row
+                wsTradic.Range("I20:I" & wsTradic.Cells(wsTradic.Rows.Count, "I").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "D").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                 ' TERCERA columna N
+                
+                  ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("N20:N" & wsTradic.Cells(wsTradic.Rows.Count, "N").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "E").End(xlUp).Row
+                wsTradic.Range("N20:N" & wsTradic.Cells(wsTradic.Rows.Count, "N").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "E").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' CUARTA columna O
+                
+                
+                  ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("O20:O" & wsTradic.Cells(wsTradic.Rows.Count, "O").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "F").End(xlUp).Row
+                wsTradic.Range("O20:O" & wsTradic.Cells(wsTradic.Rows.Count, "O").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "F").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' QUINTA columna P
+                
+                
+                  ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("P20:P" & wsTradic.Cells(wsTradic.Rows.Count, "P").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "G").End(xlUp).Row
+                wsTradic.Range("P20:P" & wsTradic.Cells(wsTradic.Rows.Count, "P").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "G").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' SEXTA columna C
+                
+                
+                  ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("C20:C" & wsTradic.Cells(wsTradic.Rows.Count, "C").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "H").End(xlUp).Row
+                wsTradic.Range("C20:C" & wsTradic.Cells(wsTradic.Rows.Count, "C").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "H").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' SEPTIMA columna R
+                
+                
+                  ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("R20:R" & wsTradic.Cells(wsTradic.Rows.Count, "R").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "I").End(xlUp).Row
+                wsTradic.Range("R20:R" & wsTradic.Cells(wsTradic.Rows.Count, "R").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "I").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                
+                ' OCTAVA columna S
+                
+                
+                  ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("S20:S" & wsTradic.Cells(wsTradic.Rows.Count, "S").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "J").End(xlUp).Row
+                wsTradic.Range("S20:S" & wsTradic.Cells(wsTradic.Rows.Count, "S").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "J").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' NOVENA columna T
+                
+                
+                  ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("T20:T" & wsTradic.Cells(wsTradic.Rows.Count, "T").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "K").End(xlUp).Row
+                wsTradic.Range("T20:T" & wsTradic.Cells(wsTradic.Rows.Count, "T").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "K").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                
+               ' DECIMO columna U
+
+                ' Copiar los datos desde B20 hasta la última celda con datos en "Tradic"
+                wsTradic.Range("U20:U" & wsTradic.Cells(wsTradic.Rows.Count, "U").End(xlUp).Row).Copy
+                
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "L").End(xlUp).Row
+                wsTradic.Range("U20:U" & wsTradic.Cells(wsTradic.Rows.Count, "U").End(xlUp).Row).Copy
+                
+                ' Pegar los datos en formato de porcentaje
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "L").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Convertir los valores pegados a formato de porcentaje
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Columns("L").NumberFormat = "0.0000%"
+                
+                
+                
+                
+
+                
+                
+            Case "BALLOON"
+                ' Copiar el valor de contrato en la celda D3 en "Balloon"
+                wsBalloon.Range("D3").Value = valorContrato
+                ' Copiar el valor de la celda AC17 de "simulador" al destino
+                wsBalloon.Range("D4").Copy
+                ' Pegar el valor de D4 en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 14).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Copiar el valor de la celda D12 de "simulador" al destino
+                wsBalloon.Range("D10").Copy
+                
+                ' Pegar el valor de D4 en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 8).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                ' Aplicar formato de porcentaje
+                wsContratos.Cells(cell.Row, 14).Style = "Percent"
+                wsContratos.Cells(cell.Row, 14).NumberFormat = "0.0000000000%"
+                wsContratos.Cells(cell.Row, 8).Style = "Percent"
+                wsContratos.Cells(cell.Row, 8).NumberFormat = "0.0000000000%"
+                
+                
+                
+                'PRIMERA columna B
+                
+                ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("B19:B" & wsBalloon.Cells(wsBalloon.Rows.Count, "B").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "C").End(xlUp).Row
+                wsBalloon.Range("B19:B" & wsBalloon.Cells(wsBalloon.Rows.Count, "B").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "C").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                
+                'SEGUNDA columna I
+                
+                ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("I19:I" & wsBalloon.Cells(wsBalloon.Rows.Count, "I").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "D").End(xlUp).Row
+                wsBalloon.Range("I19:I" & wsBalloon.Cells(wsBalloon.Rows.Count, "I").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "D").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                'TERCERA columna N
+                
+                ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("N19:N" & wsBalloon.Cells(wsBalloon.Rows.Count, "N").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "E").End(xlUp).Row
+                wsBalloon.Range("N19:N" & wsBalloon.Cells(wsBalloon.Rows.Count, "N").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "E").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' CUARTA columna O
+                
+               ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("O19:O" & wsBalloon.Cells(wsBalloon.Rows.Count, "O").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "F").End(xlUp).Row
+                wsBalloon.Range("O19:O" & wsBalloon.Cells(wsBalloon.Rows.Count, "O").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "F").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                 
+                ' QUINTA columna P
+                
+                
+               ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("P19:P" & wsBalloon.Cells(wsBalloon.Rows.Count, "P").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "G").End(xlUp).Row
+                wsBalloon.Range("P19:P" & wsBalloon.Cells(wsBalloon.Rows.Count, "P").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "G").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' SEXTA columna C
+                
+                
+               ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("C19:C" & wsBalloon.Cells(wsBalloon.Rows.Count, "C").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "H").End(xlUp).Row
+                wsBalloon.Range("C19:C" & wsBalloon.Cells(wsBalloon.Rows.Count, "C").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "H").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' SEPTIMA columna R
+                
+                
+               ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("R19:R" & wsBalloon.Cells(wsBalloon.Rows.Count, "R").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "I").End(xlUp).Row
+                wsBalloon.Range("R19:R" & wsBalloon.Cells(wsBalloon.Rows.Count, "R").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "I").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                
+                ' OCTAVO columna S
+                
+                
+               ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("S19:S" & wsBalloon.Cells(wsBalloon.Rows.Count, "S").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "J").End(xlUp).Row
+                wsBalloon.Range("S19:S" & wsBalloon.Cells(wsBalloon.Rows.Count, "S").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "J").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' NOVENO columna T
+                
+                
+               ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("T19:T" & wsBalloon.Cells(wsBalloon.Rows.Count, "T").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "K").End(xlUp).Row
+                wsBalloon.Range("T19:T" & wsBalloon.Cells(wsBalloon.Rows.Count, "T").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "K").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                
+                ' DECIMO columna U
+
+                ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("U19:U" & wsBalloon.Cells(wsBalloon.Rows.Count, "U").End(xlUp).Row).Copy
+                
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "L").End(xlUp).Row
+                wsBalloon.Range("U19:U" & wsBalloon.Cells(wsBalloon.Rows.Count, "U").End(xlUp).Row).Copy
+                
+                ' Pegar los datos en formato de porcentaje
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "L").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Convertir los valores pegados a formato de porcentaje
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Columns("L").NumberFormat = "0.0000%"
+                
+                
+                
+                ' NOVENO columna T
+                
+                
+               ' Copiar los datos desde B20 hasta la última celda con datos en "Balloon"
+                wsBalloon.Range("K19:K" & wsBalloon.Cells(wsBalloon.Rows.Count, "K").End(xlUp).Row).Copy
+                ' Pegar los datos en la hoja "contratos"
+                wsContratos.Cells(cell.Row, 15).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                ' Pegar los datos en la hoja "cltm_tir_ifrs_exclusivo" en el otro libro
+                ultimaFilaOtroLibro = otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Rows.Count, "B").End(xlUp).Row
+                wsBalloon.Range("K19:T" & wsBalloon.Cells(wsBalloon.Rows.Count, "K").End(xlUp).Row).Copy
+                otroLibro.Sheets("cltm_tir_ifrs_exclusivo").Cells(ultimaFilaOtroLibro + 1, "B").PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+
+                
+                
+        End Select
+    Next cell
+
+End Sub
+
+
+
+
